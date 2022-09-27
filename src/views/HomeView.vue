@@ -7,8 +7,8 @@
       </v-stepper-step>
 
       <v-stepper-content step="1">
-        <v-card color="grey lighten-1" class="mb-12" height="200px">
-          <Sign-up-info />
+        <v-card color="grey lighten-1" class="mb-12" >
+          <sign-up-info  />
         </v-card>
         <v-btn color="primary" @click="step = 2"> Continue </v-btn>
       </v-stepper-content>
@@ -20,7 +20,7 @@
 
       <v-stepper-content step="2">
         <v-card color="grey lighten-1" class="mb-12" height="200px">
-          <Sign-up-info />
+          <personal-info />
         </v-card>
         <v-btn color="primary" @click="step = 1">
           Change SignUp Information
@@ -33,6 +33,7 @@
 
 <script>
 import SignUpInfo from "../components/SignUpInfo";
+import PersonalInfo from "../components/PersonalInfo";
 
 export default {
   name: "Home-view",
@@ -44,6 +45,7 @@ export default {
 
   components: {
     SignUpInfo,
+    PersonalInfo,
   },
 };
 </script>

@@ -6,7 +6,7 @@
   
   <script>
 export default {
-  name: "Sign-up-info",
+  name: "Personal-info",
 
   data: () => ({}),
   components: {},
