@@ -1,10 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
+    <v-app-bar app color="primary" dark>
       <div class="d-flex align-center">
         <v-img
           alt="Vuetify Logo"
@@ -38,18 +34,25 @@
     </v-app-bar>
 
     <v-main>
-      <router-view/>
+      <router-view />
     </v-main>
+
+    <v-footer color="primary" dark max-height="200px" fixed>
+      <v-row justify="center" no-gutters>
+        <v-col class="primary py-4 text-center white--text" cols="12">
+          {{ new Date().getFullYear() }} — <strong>Footer</strong>
+        </v-col>
+      </v-row>
+    </v-footer>
   </v-app>
 </template>
 
 <script>
-
 export default {
-  name: 'App',
+  name: "App",
 
   data: () => ({
-    //
+   
   }),
 };
 </script>
