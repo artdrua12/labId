@@ -37,7 +37,7 @@
       <router-view />
     </v-main>
 
-    <v-footer color="primary" dark max-height="200px" fixed>
+    <v-footer color="primary" dark max-height="200px">
       <v-row justify="center" no-gutters>
         <v-col class="primary py-4 text-center white--text" cols="12">
           <strong>Footer</strong> - {{ new Date().getFullYear() }}

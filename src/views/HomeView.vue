@@ -7,10 +7,12 @@
       </v-stepper-step>
 
       <v-stepper-content step="1">
-        <v-card color="grey lighten-1" class="mb-12" >
-          <sign-up-info  />
+        <v-card color="grey lighten-1" class="mb-12">
+          <sign-up-info :checkSignUp="checkSignUp" @valid="step = $event" />
         </v-card>
-        <v-btn color="primary" @click="step = 2"> Continue </v-btn>
+        <v-btn color="primary" @click="checkSignUp = !checkSignUp">
+          Continue
+        </v-btn>
       </v-stepper-content>
 
       <v-stepper-step :complete="step > 2" step="2">
@@ -19,13 +21,20 @@
       </v-stepper-step>
 
       <v-stepper-content step="2">
-        <v-card color="grey lighten-1" class="mb-12" height="200px">
-          <personal-info />
+        <v-card color="grey lighten-1" class="mb-12" >
+          <personal-info :checkSignUp="checkPersonal" @valid="step = $event" />
         </v-card>
         <v-btn color="primary" @click="step = 1">
           Change SignUp Information
         </v-btn>
-        <v-btn text color="primary" class="ml-5"> Complete </v-btn>
+        <v-btn
+          text
+          color="primary"
+          class="ml-5"
+          @click="checkPersonal = !checkPersonal"
+        >
+          Complete
+        </v-btn>
       </v-stepper-content>
     </v-stepper>
   </div>
@@ -40,8 +49,11 @@ export default {
   data() {
     return {
       step: 1,
+      checkSignUp: true,
+      checkPersonal: true,
     };
   },
+  methods: {},
 
   components: {
     SignUpInfo,
