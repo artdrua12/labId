@@ -19,8 +19,8 @@
 
       <v-col cols="12" sm="6" md="4" lg="3">
         <v-text-field
-          v-model="password"
-          :counter="10"
+          v-model="fields.password.value"
+          :error-messages="fields.password.error"
           label="Password"
         ></v-text-field>
       </v-col>
@@ -51,10 +51,13 @@ export default {
         value: "abc@maionez.ru",
         error: "",
       },
+      password: {
+        value: "ab22",
+        error: "",
+      },
     },
-    password: "",
     repeatPassword: "",
-    shema: {
+    schema: {
       mobilePhone: {
         required: true,
         regExp: "^\\+375\\d{9}$",
@@ -73,20 +76,44 @@ export default {
   }),
   methods: {
     checkRegular(field) {
-      let normalize = this.shema?.[field]?.regExp.replace(/\\/g, "\\");
+      let normalize = this.schema?.[field]?.regExp.replace(/\\/g, "\\");
       return new RegExp(normalize).test(this.fields[field].value);
     },
-    isError(field) {
+    isErrorRegEx(field) {
       if (this.checkRegular(field)) {
         this.fields[field].error = "";
       } else {
-        this.fields[field].error = "No falid";
+        this.fields[field].error = "No valid";
+      }
+    },
+    isErrorLenght(field) {
+      let strLen = String(this.fields[field].value).length || 0;
+      let min = "";
+      let max = "";
+      let keys = Object.keys(this.schema[field]);
+
+      for (let i = 0; i < keys.length; i++) {
+        if (keys[i].match("min")) {
+          min = +this.schema[field][keys[i]];
+        } else if (keys[i].match("max")) {
+          max = +this.schema[field][keys[i]];
+        }
+      }
+
+      if (strLen <= max && strLen >= min) {
+        this.fields[field].error = "";
+      } else {
+        this.fields[field].error = `"Length from  ${min} to ${max}"`;
       }
     },
     check() {
-      let d = ["mobilePhone", "email"];
-      for (let i = 0; i < d.length; i++) {
-        this.isError(d[i]);
+      let array = ["mobilePhone", "email", "password"];
+      for (let i = 0; i < array.length; i++) {
+        if ("regExp" in this.schema[array[i]]) {
+          this.isErrorRegEx(array[i]);
+        } else {
+          this.isErrorLenght(array[i]);
+        }
       }
     },
   },
