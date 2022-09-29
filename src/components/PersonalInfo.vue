@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12" sm="6" md="4" lg="3">
+      <v-col cols="12" sm="6" md="4" lg="4">
         <v-text-field
           label="First Name"
           v-model="fields.firstName.value"
@@ -9,7 +9,7 @@
         ></v-text-field>
       </v-col>
 
-      <v-col cols="12" sm="6" md="4" lg="3">
+      <v-col cols="12" sm="6" md="4" lg="4">
         <v-text-field
           v-model="fields.lastName.value"
           label="Last Name"
@@ -17,78 +17,69 @@
         ></v-text-field>
       </v-col>
 
-      <v-col cols="12" sm="6" md="4" lg="3">
+      <v-col cols="12" sm="6" md="4" lg="4">
         <v-menu
-        ref="menu"
-        v-model="menu"
-        :close-on-content-click="false"
-        :return-value.sync="date"
-        transition="scale-transition"
-        offset-y
-        min-width="auto"
-      >
-        <template v-slot:activator="{ on, attrs }">
-          <v-text-field
-            v-model="date"
-            label="Picker in menu"
-            prepend-icon="mdi-calendar"
-            readonly
-            v-bind="attrs"
-            v-on="on"
-          ></v-text-field>
-        </template>
-        <v-date-picker
-          v-model="date"
-          no-title
-          scrollable
+          ref="menu"
+          v-model="menu"
+          :close-on-content-click="false"
+          transition="scale-transition"
+          offset-y
+          min-width="auto"
         >
-          <v-spacer></v-spacer>
-          <v-btn
-            text
-            color="primary"
-            @click="menu = false"
-          >
-            Cancel
-          </v-btn>
-          <v-btn
-            text
-            color="primary"
-            @click="$refs.menu.save(date)"
-          >
-            OK
-          </v-btn>
-        </v-date-picker>
-      </v-menu>
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              v-model="date"
+              label="Birthday date"
+              prepend-icon="mdi-calendar"
+              readonly
+              v-bind="attrs"
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-date-picker
+            v-model="date"
+            locale="ru-ru"
+            first-day-of-week="1"
+            :active-picker.sync="activePicker"
+            :max="
+              new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+                .toISOString()
+                .substr(0, 10)
+            "
+            @change="save"
+          ></v-date-picker>
+        </v-menu>
       </v-col>
 
-      <v-col cols="12" sm="6" md="4" lg="3">
-        <v-radio-group v-model="fields.radioGroup" row>
-          <v-radio label="Man" color="indigo" value="man"></v-radio>
-          <v-radio label="Woman" color="red" value="woman"></v-radio>
-        </v-radio-group>
-      </v-col>
-
-      <v-col cols="12" sm="6" md="4" lg="3">
+      <v-col cols="12" sm="6" md="4" lg="4">
         <v-select
           :items="schema.ocean.oneOf"
           label="Your Favorite Ocean"
         ></v-select>
       </v-col>
 
-      <v-col
-        cols="6"
-        sm="2"
-        md="2"
-        lg="1"
-        v-for="i in schema.hobby.anyOf"
-        :key="i"
-      >
-        <v-checkbox
-          v-model="fields.checkBox"
-          :label="i"
-          :value="i"
-          error-messages=""
-        ></v-checkbox>
+      <v-col cols="12" sm="6" md="4" lg="4">
+        <v-radio-group v-model="fields.radioGroup" row >
+          <v-radio label="Man" color="indigo" value="man"></v-radio>
+          <v-radio label="Woman" color="red" value="woman"></v-radio>
+        </v-radio-group>
+      </v-col>
+
+      <v-col cols="12" sm="6" md="4" lg="4">
+        <v-row cols="12" >
+          <v-col
+            v-for="i in schema.hobby.anyOf"
+            :key="i"
+          >
+            <v-checkbox
+              v-model="fields.checkBox"
+              :label="i"
+              :value="i"
+              hide-details="true"
+              error-messages=""
+            ></v-checkbox>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
   </v-container>
@@ -106,12 +97,9 @@ export default {
   },
 
   data: () => ({
-    date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-      .toISOString()
-      .substr(0, 10),
+    activePicker: null,
+    date: null,
     menu: false,
-    modal: false,
-    menu2: false,
 
     isValid: true,
     fields: {
@@ -157,6 +145,9 @@ export default {
     },
   }),
   methods: {
+    save(date) {
+      this.$refs.menu.save(date);
+    },
     checkRegular(field) {
       let normalize = this.schema?.[field]?.regExp.replace(/\\/g, "\\");
       return new RegExp(normalize).test(this.fields[field].value);
@@ -225,6 +216,9 @@ export default {
       if (this.isValid) {
         this.$emit("valid", 2);
       }
+    },
+    menu(val) {
+      val && setTimeout(() => (this.activePicker = "YEAR"));
     },
   },
 };
