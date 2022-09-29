@@ -22,7 +22,7 @@
 
       <v-stepper-content step="2">
         <v-card color="grey lighten-1" class="mb-12" >
-          <personal-info :checkSignUp="checkPersonal" @valid="step = $event" />
+          <personal-info :checkPersonal="checkPersonal" @validPersonal="step = $event" />
         </v-card>
         <v-btn color="primary" @click="step = 1">
           Change SignUp Information
