@@ -87,11 +87,17 @@
 
 <script>
 import moment from "moment";
+import maimMixin from "@/mixins/Mixin";
 
 export default {
   name: "Personal-info",
   emits: ["validPersonal"],
+  mixins: [maimMixin],
   props: {
+    schema: {
+      type: Object,
+      required: true,
+    },
     checkPersonal: {
       type: Boolean,
       required: true,
@@ -124,38 +130,38 @@ export default {
         error: "",
       },
       hobby: {
-        value: null,
+        value: [],
         error: "",
       },
     },
-    schema: {
-      firstName: {
-        required: true,
-        minLength: "2",
-        maxLength: "30",
-      },
-      lastName: {
-        required: true,
-        minLength: "2",
-        maxLength: "30",
-      },
-      birthday: {
-        required: true,
-        minAge: "18",
-        maxAge: "90",
-      },
-      ocean: {
-        required: true,
-        oneOf: ["Atlantic", "Pacific", "Indian", "Arctic"],
-      },
-      hobby: {
-        required: true,
-        anyOf: ["Sport", "Beauty", "IT", "Pets"],
-      },
-      sex: {
-        required: true,
-      },
-    },
+    // schema: {
+    //   firstName: {
+    //     required: true,
+    //     minLength: "2",
+    //     maxLength: "30",
+    //   },
+    //   lastName: {
+    //     required: true,
+    //     minLength: "2",
+    //     maxLength: "30",
+    //   },
+    //   birthday: {
+    //     required: true,
+    //     minAge: "18",
+    //     maxAge: "90",
+    //   },
+    //   ocean: {
+    //     required: true,
+    //     oneOf: ["Atlantic", "Pacific", "Indian", "Arctic"],
+    //   },
+    //   hobby: {
+    //     required: true,
+    //     anyOf: ["Sport", "Beauty", "IT", "Pets"],
+    //   },
+    //   sex: {
+    //     required: true,
+    //   },
+    // },
   }),
   methods: {
     difference(d1, d2) {
@@ -165,19 +171,8 @@ export default {
     save(date) {
       this.$refs.menu.save(date);
     },
-    checkRegular(field) {
-      let normalize = this.schema?.[field]?.regExp.replace(/\\/g, "\\");
-      return new RegExp(normalize).test(this.fields[field].value);
-    },
-    checkLength(field) {
-      const strLen = String(this.fields[field].value).length || 0;
-      const min = +this.schema[field]?.minLength;
-      const max = +this.schema[field]?.maxLength;
-
-      return { isError: strLen <= max && strLen >= min, min, max };
-    },
     checkAge(field) {
-      if (this.fields[field].value) {
+      if (this.fields[field].value != "" || this.fields[field].value != []) {
         const age = this.difference(new Date(), this.fields[field].value);
         const min = +this.schema[field]?.minAge;
         const max = +this.schema[field]?.maxAge;
@@ -186,90 +181,20 @@ export default {
         return { isError: false, min: 0, max: 0 };
       }
     },
-    isErrorRegEx(field) {
-      if (this.checkRegular(field)) {
-        this.fields[field].error = "";
-      } else {
-        this.isValid = false;
-        this.fields[field].error = "No valid";
-      }
-    },
-    isErrorLenght(field) {
-      const checkObj = this.checkLength(field);
-      if (checkObj.isError) {
-        this.fields[field].error = "";
-      } else {
-        this.isValid = false;
-        this.fields[
-          field
-        ].error = `"Length from  ${checkObj.min} to ${checkObj.max}"`;
-      }
-    },
-    isErrorAge(field) {
-      const checkObj = this.checkAge(field);
-      if (checkObj.error) {
-        this.fields[field].error = "";
-      } else if (checkObj.max > 0) {
-        this.isValid = false;
-        this.fields[
-          field
-        ].error = `"Ange from  ${checkObj.min} to ${checkObj.max}"`;
-      } else {
-        this.isErrorRequired(field);
-      }
-    },
-    isErrorRepeatField(field) {
-      const shortField = (field.split("repeat")[1] || "").toLowerCase();
-      if (this.fields[field].value === this.fields[shortField].value) {
-        this.fields[field].error = "";
-      } else {
-        this.isValid = false;
-        this.fields[
-          field
-        ].error = `"This string does not match the ${shortField}"`;
-      }
-    },
-    isErrorRequired(field) {
-      if (this.fields[field].value) {
-        this.fields[field].error = "";
-      } else {
-        this.isValid = false;
-        this.fields[field].error = "This field is required!";
-      }
-    },
-
-    check() {
-      let keys = Object.keys(this.fields);
-      this.isValid = true;
-      for (let i = 0; i < keys.length; i++) {
-        if ("regExp" in this.schema[keys[i]]) {
-          this.isErrorRegEx(keys[i]);
-        } else if (keys[i].match("repeat")) {
-          this.isErrorRepeatField(keys[i]);
-        } else if ("maxAge" in this.schema[keys[i]]) {
-          this.isErrorAge(keys[i]);
-          console.log("age");
-        } else if ("maxLength" in this.schema[keys[i]]) {
-          this.isErrorLenght(keys[i]);
-        } else {
-          this.isErrorRequired(keys[i]);
-        }
-      }
-    },
   },
   computed: {
     dateFormatted() {
       if (!this.fields.birthday.value) return null;
-      const [year, month, day] = this.fields.birthday.value.split("-");
-      return `${day}-${month}-${year}`;
-      // return moment(this.fields.birthday.value).format("DD-MM-YYYY");
+      // const [year, month, day] = this.fields.birthday.value.split("-");
+      // return `${day}-${month}-${year}`;
+      return moment(this.fields.birthday.value).format("DD-MM-YYYY");
     },
   },
   watch: {
     checkPersonal() {
       this.check();
       if (this.isValid) {
-        this.$emit("validPersonal", 1);
+        this.$emit("validPersonal", this.fields);
       }
     },
     menu(val) {
